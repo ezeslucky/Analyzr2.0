@@ -1,428 +1,224 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
+ 
+ generator client {
+ provider = "prisma-client-js"
+}
+ 
+ datasource db {
+ provider = "postgresql"
+ url      = env("DATABASE_URL")
+ 
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
+
 
 model User {
-  id          String   @id @default(cuid()) @unique @map("user_id") @db.Uuid
-  name        String?
-  email       String   @unique
-  emailVerified DateTime?
-  image       String? 
-  role        String   @default("USER") @map("role") @db.VarChar(50)
+ id            String          @id @default(cuid())
+ name          String?
+ email         String          @unique
+ emailVerified DateTime?
+ image         String?
+ role          String          @default("USER")
+ accounts      Account[]
+ sessions      Session[]
+ projects      Project[]
+ Authenticator Authenticator[]
 
-  displayName String?  @map("display_name") @db.VarChar(255)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
 
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
-
-  websiteUser      Website[] @relation("user")
-  websiteCreateUser Website[] @relation("createUser")
-
-  teamUser      TeamUser[]
-  report     Report[]
-  bugReports    BugReport[]
-  accounts      Account[]
-  sessions      Session[]
-  projects      Project[]
-  authenticators Authenticator[]
-  @@map("user")
+ BugReport BugReport[]
 }
 
 model Project {
-  id String @id @default(cuid())
-  domain String @unique
-  name String 
-  description String?
-  ownerId String 
-  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade) 
-  analytics Analytics?
+ id          String     @id @default(cuid())
+ domain      String     @unique
+ name        String
+ description String?
+ ownerId     String
+ owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+ analytics   Analytics?
 
-  createsAt DateTime @default(now())
-  updated DateTime @updatedAt
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
 
-  @@index([ownerId])
+ @@index([ownerId])
 }
 
 model Analytics {
-  id String @id @default(cuid())
-  projectId String @unique
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+ id        String  @id @default(cuid())
+ projectId String  @unique
+ project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  totalPageVisits Int @default(0)
-  totalVisitory Int @default(0)
+ totalPageVisits Int @default(0)
+ totalVisitors   Int @default(0)
 
-  visitHistory VisitData[]
-  routeAnalytics RouteAnalytics[]
-  countryAnalytics CountryAnalytics[]
-  deviceAnalytics DeviceAnalytics[]
-  osAnalytics OSAnalytics[]
-  sourceAnalytics SourceAnalytics[]
+ visitHistory VisitData[]
 
+ routeAnalytics RouteAnalytics[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+ countryAnalytics CountryAnalytics[]
+
+ deviceAnalytics DeviceAnalytics[]
+
+ osAnalytics OSAnalytics[]
+
+ sourceAnalytics SourceAnalytics[]
+
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
 }
 
 model VisitData {
-  id String @id @default(cuid())
-  analyticsId String
-  analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
+ id          String    @id @default(cuid())
+ analyticsId String
+ analytics   Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
 
-  date DateTime @db.Date
-  pageVisits Int @default(0)
-  visitors Int @default(0)
+ date       DateTime @db.Date
+ pageVisits Int      @default(0)
+ visitors   Int      @default(0)
 
-  @@unique([analyticsId,date])
-  @@index([analyticsId])
-  @@index([date])
+ @@unique([analyticsId, date])
+ @@index([analyticsId])
+ @@index([date])
 }
 
 model RouteAnalytics {
-  id String @id @default(cuid())
-  analyticsId String 
-  analytics Analytics @relation(fields: [analyticsId], references: [id] ,onDelete: Cascade)
+ id          String    @id @default(cuid())
+ analyticsId String
+ analytics   Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
 
-  route String
-  visitors Int @default(0)
-  pageVisits Int @default(0)
+ route      String
+ visitors   Int    @default(0)
+ pageVisits Int    @default(0)
 
-  @@unique([analyticsId,route])
-  @@index([analyticsId])
+ @@unique([analyticsId, route])
+ @@index([analyticsId])
 }
 
 model CountryAnalytics {
-  id String @id @default(cuid())
-  analyticsId String
-  analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
+ id          String    @id @default(cuid())
+ analyticsId String
+ analytics   Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
 
-  countryCode String @db.VarChar(2)
-  countryName String
-  visitors Int @default(0)
-  @@unique([analyticsId,countryCode])
-  @@index([analyticsId])
+ countryCode String @db.VarChar(2)
+ countryName String
+ visitors    Int    @default(0)
+
+ @@unique([analyticsId, countryCode])
+ @@index([analyticsId])
 }
 
 model DeviceAnalytics {
-  id String @id @default(cuid())
-  analyticsId String
-  analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
+ id          String    @id @default(cuid())
+ analyticsId String
+ analytics   Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
 
-  deviceType DeviceType
-  visitors Int @default(0)
+ deviceType DeviceType
+ visitors   Int        @default(0)
 
-  @@unique([analyticsId,deviceType])
-  @@index([analyticsId])
+ @@unique([analyticsId, deviceType])
+ @@index([analyticsId])
 }
 
-
-
 model OSAnalytics {
-  id String @id @default(cuid())
-  analyticsId String
-  analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
+ id          String    @id @default(cuid())
+ analyticsId String
+ analytics   Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
 
-  osName String
-  visitors Int @default(0)
+ osName   String
+ visitors Int    @default(0)
 
-  @@unique([analyticsId,osName])
-  @@index([analyticsId])
+ @@unique([analyticsId, osName])
+ @@index([analyticsId])
 }
 
 model SourceAnalytics {
-  id String @id @default(cuid())
-  analyticsId String
-  analytics Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
+ id          String    @id @default(cuid())
+ analyticsId String
+ analytics   Analytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
 
-  sourceName String
-  visitors Int @default(0)
+ sourceName String
+ visitors   Int    @default(0)
 
-
-  @@unique([analyticsId,sourceName])
-  @@index([analyticsId])
+ @@unique([analyticsId, sourceName])
+ @@index([analyticsId])
 }
+
 enum DeviceType {
-  DESKTOP
-  MOBILE
-  TABLET
+ DESKTOP
+ MOBILE
+ TABLET
 }
+
 model Account {
-  userId String 
-  type String 
-  provider String 
-  providerAccountId String
-  refresh_token String?
-  access_token String?
-  expires_at Int?
-  token_type String?
-  scope String?
-  id_token String?
-  session_state String?
+ userId            String
+ type              String
+ provider          String
+ providerAccountId String
+ refresh_token     String?
+ access_token      String?
+ expires_at        Int?
+ token_type        String?
+ scope             String?
+ id_token          String?
+ session_state     String?
 
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
 
+ user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([provider,providerAccountId])
+ @@id([provider, providerAccountId])
 }
 
 model Session {
-  id String @id @unique @map("session_id") @db.Uuid
-  websiteId String @map("website_id") @db.Uuid
-  hostname String? @db.VarChar(100)
-  browser String? @db.VarChar(20)
-  os String? @db.VarChar(20)
-  device String? @db.VarChar(20)
-  screen String? @db.VarChar(11)
-  language String? @db.VarChar(35)
-  country String? @db.VarChar(2)
-  subdivision1 String? @db.VarChar(20)
-  subdivision2 String? @db.VarChar(50)
-  city String? @db.VarChar(50)
+ sessionToken String   @unique
+ userId       String
+ expires      DateTime
+ user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  sessionToken String @unique
-  userId String
-  expirse DateTime
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt
-
-  websiteEvent WebsiteEvent[]
-  sessionData SessionData[]
-
-
-  @@index([createdAt])
-  @@index([websiteId])
-  @@index([websiteId,createdAt])
-  @@index([websiteId,createdAt,hostname])
-  @@index([websiteId,createdAt,os])
-  @@index([websiteId,createdAt,device])
-  @@index([websiteId,createdAt,screen])
-  @@index([websiteId,createdAt,language])
-  @@index([websiteId,createdAt,country])
-  @@index([websiteId,createdAt,subdivision1])
-  @@index([websiteId,createdAt,city])
-
-
-  @@map("session")
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
-  identifier String 
-  token String
-  expires DateTime
+ identifier String
+ token      String
+ expires    DateTime
 
-  @@id([identifier,token])
+ @@id([identifier, token])
 }
 
 model Authenticator {
-  credentialId String @unique
-  userId String
-  providerAccountId String
-  credentialPublicKey String
-  counter Int
-  credentialDeviceType String
-  credentialBackedUp Boolean
-  transports String?
+ credentialID         String  @unique
+ userId               String
+ providerAccountId    String
+ credentialPublicKey  String
+ counter              Int
+ credentialDeviceType String
+ credentialBackedUp   Boolean
+ transports           String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([userId, credentialId])
+ @@id([userId, credentialID])
 }
 
 model Log {
-  id String @id @default(cuid())
-  message String
-  level String @default("info")
+  id        String   @id @default(cuid())
+  message   String
+  level     String   @default("info") // "info", "warn", "error"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model BugReport {
-  id String @id @default(cuid())
-  title String
+  id          String   @id @default(cuid())
+  title       String
   description String
-  status String @default("inReview")
-
-  ownerId String
-  owner User @relation(fields: [ownerId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-
-model Website{
-  id String @id @unique @map("website_id")
-  name String @db.VarChar(100)
-  domain String? @db.VarChar(500)
-  shareId String? @unique @map("share_id") @db.VarChar(50)
-  resetAt DateTime? @map("reset_at") @db.Timestamptz(6)
-  userId String? @map("user_id") @db.Uuid
-  teamId String? @map("team_id") @db.Uuid
-  createdBy String? @map("created_by") @db.Uuid
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-
-
-  user User? @relation("user", fields: [userId], references: [id])
-  createUser User? @relation("createUser",fields: [createdBy], references: [id])
-
-  team Team? @relation(fields: [teamId], references: [id])
-
-  eventData EventData[]
-  report Report[]
-  sessionData SessionData[]
-
-  @@index([userId])
-  @@index([teamId])
-  @@index([createdAt])
-  @@index([shareId])
-  @@index([createdBy])
-  @@map("website")
-
-
-}
-
-model WebsiteEvent {
-  id String @id() @map("event_id") @db.Uuid
-  websiteId String @map("wensite_id") @db.Uuid
-  sessionId String @map("session_id") @db.Uuid
-  visitId String @map("visit_id") @db.Uuid 
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
-  urlPath String @map("url_path") @db.VarChar(500)
-  urlQuery String? @map("url_query") @db.VarChar(500)
-  referrerPath String? @map("referrer_path") @db.VarChar(500)
-  referrerQuery String? @map("referrer_query") @db.VarChar(500)
-  referrerDomain String? @map("referrer_domain") @db.VarChar(500)
-  pageTitle String? @map("page_title") @db.VarChar(500)
-  eventType Int @default(1) @map("event_type") @db.Integer
-  eventName String? @map("event_name") @db.VarChar(50)
-  tag String? @db.VarChar(50)
-
-  eventData EventData[]
-  session Session @relation(fields: [sessionId], references: [id])
-
-  @@index([createdAt])
-  @@index([sessionId])
-  @@index([visitId])
-  @@index([websiteId])
-  @@index([websiteId,createdAt])
-  @@index([websiteId,createdAt,urlPath])
-  @@index([websiteId,createdAt,urlQuery])
-  @@index([websiteId,createdAt,referrerDomain])
-  @@index([websiteId,createdAt,pageTitle])
-  @@index([websiteId,createdAt,eventName])
-  @@index([websiteId,createdAt,tag])
-  @@index([websiteId,sessionId,createdAt])
-  @@index([websiteId,visitId,createdAt])
-  @@map("website_event")
-
-}
-
-model EventData {
-  id             String    @id() @map("event_data_id") @db.Uuid
-  websiteId      String    @map("website_id") @db.Uuid
-  websiteEventId String    @map("website_event_id") @db.Uuid
-  dataKey        String    @map("data_key") @db.VarChar(500)
-  stringValue    String?   @map("string_value") @db.VarChar(500)
-  numberValue    Decimal?  @map("number_value") @db.Decimal(19, 4)
-  dateValue      DateTime? @map("date_value") @db.Timestamptz(6)
-  dataType       Int       @map("data_type") @db.Integer
-  createdAt      DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  website      Website      @relation(fields: [websiteId], references: [id])
-  websiteEvent WebsiteEvent @relation(fields: [websiteEventId], references: [id])
-
-  @@index([createdAt])
-  @@index([websiteId])
-  @@index([websiteEventId])
-  @@index([websiteId, createdAt])
-  @@index([websiteId, createdAt, dataKey])
-  @@map("event_data")
-}
-
-model SessionData {
-  id          String    @id() @map("session_data_id") @db.Uuid
-  websiteId   String    @map("website_id") @db.Uuid
-  sessionId   String    @map("session_id") @db.Uuid
-  dataKey     String    @map("data_key") @db.VarChar(500)
-  stringValue String?   @map("string_value") @db.VarChar(500)
-  numberValue Decimal?  @map("number_value") @db.Decimal(19, 4)
-  dateValue   DateTime? @map("date_value") @db.Timestamptz(6)
-  dataType    Int       @map("data_type") @db.Integer
-  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  website Website @relation(fields: [websiteId], references: [id])
-  session Session @relation(fields: [sessionId], references: [id])
-
-  @@index([createdAt])
-  @@index([websiteId])
-  @@index([sessionId])
-  @@index([sessionId, createdAt])
-  @@index([websiteId, createdAt, dataKey])
-  @@map("session_data")
-}
-
-model Team {
-  id         String    @id() @unique() @map("team_id") @db.Uuid
-  name       String    @db.VarChar(50)
-  accessCode String?   @unique @map("access_code") @db.VarChar(50)
-  logoUrl    String?   @map("logo_url") @db.VarChar(2183)
-  createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(6)
-
-  website  Website[]
-  teamUser TeamUser[]
-
-  @@index([accessCode])
-  @@map("team")
-}
-
-model TeamUser {
-  id        String    @id() @unique() @map("team_user_id") @db.Uuid
-  teamId    String    @map("team_id") @db.Uuid
-  userId    String    @map("user_id") @db.Uuid
-  role      String    @map("role") @db.VarChar(50)
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  team Team @relation(fields: [teamId], references: [id])
-  user User @relation(fields: [userId], references: [id])
-
-  @@index([teamId])
-  @@index([userId])
-  @@map("team_user")
-}
-
-model Report {
-  id          String    @id() @unique() @map("report_id") @db.Uuid
-  userId      String    @map("user_id") @db.Uuid
-  websiteId   String    @map("website_id") @db.Uuid
-  type        String    @map("type") @db.VarChar(200)
-  name        String    @map("name") @db.VarChar(200)
-  description String    @map("description") @db.VarChar(500)
-  parameters  String    @map("parameters") @db.VarChar(6000)
-  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  user    User    @relation(fields: [userId], references: [id])
-  website Website @relation(fields: [websiteId], references: [id])
-
-  @@index([userId])
-  @@index([websiteId])
-  @@index([type])
-  @@index([name])
-  @@map("report")
+  status      String   @default("inReview") // isPending, inReview, inProgress, isResolved
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

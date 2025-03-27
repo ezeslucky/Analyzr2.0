@@ -1,20 +1,20 @@
-import { auth } from "@/auth"
-import { headers } from "next/headers"
-import { SessionProvider } from "next-auth/react";
 import React from "react";
-type Props ={
-    children: React.ReactNode
-}
+import { headers } from "next/headers";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
 
-const Provider = async ({children} :Props) =>{
+type Props = {
+  children: React.ReactNode;
+};
 
-await headers()
+const Provider = async ({ children }: Props) => {
+  // Wait for headers to be available
+  await headers();
 
-const session = await auth()
-return <SessionProvider session={session} >
-    {children}
-</SessionProvider>
+  // Now we can safely call auth()
+  const session = await auth();
 
-}
+  return <SessionProvider session={session}>{children}</SessionProvider>;
+};
 
-export default Provider
+export default Provider;
