@@ -4,6 +4,9 @@ import Provider from "./provider";
 import { TailwindIndicator } from "@/components/globals/tailwind-indicator";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/layout/theme-provider";
+import { Navbar } from "./(landing)/navbar";
+import Footer from "./(landing)/footer";
 
 
 const geistSans = Geist({
@@ -17,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Analytics Dashboard | Real-Time Business Insights",
+  title: "Analyzr",
   description:
     "Comprehensive analytics dashboard providing real-time business insights, data visualization, performance metrics, and customizable reporting tools.",
   keywords:
@@ -30,16 +33,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-     
+    <html lang="en" suppressHydrationWarning>
+      
       <body
         className={`${geistSans.variable} ${geistMono.variable} a antialiased`}
       >
-        <Provider>
-          {children}
+        
+         <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+        
+          <Navbar />
+          <Provider>
+          
+            {children}
+         
+          </Provider>
           <TailwindIndicator />
-        </Provider>
-        <Toaster />
+          <Toaster />
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

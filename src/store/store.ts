@@ -17,11 +17,11 @@ interface ModalStore {
   onClose: () => void;
 }
 
-export const useModal = create<ModalStore>((set: (arg0: { isOpen: boolean; type: any; data: any; }) => any) => ({
+export const useModal = create<ModalStore>((set) => ({
   isOpen: false,
   type: null,
   data: undefined,
-  onOpen: (type: any, data: any) => set({ isOpen: true, type, data }),
+  onOpen: (type, data) => set({ isOpen: true, type, data }),
   onClose: () => set({ isOpen: false, type: null, data: undefined }),
 }));
 
@@ -30,14 +30,14 @@ interface TabStore {
   setActiveTab: (tabId: string) => void;
 }
 
-export const useTabStore = create<TabStore>((set: (arg0: { activeTab: any; }) => any) => ({
+export const useTabStore = create<TabStore>((set) => ({
   activeTab: "metadata",
-  setActiveTab: (tabId: any) => set({ activeTab: tabId }),
+  setActiveTab: (tabId) => set({ activeTab: tabId }),
 }));
 
-export const useSettingsTabStore = create<TabStore>((set: (arg0: { activeTab: any; }) => any) => ({
+export const useSettingsTabStore = create<TabStore>((set) => ({
   activeTab: "logs",
-  setActiveTab: (tabId: any) => set({ activeTab: tabId }),
+  setActiveTab: (tabId) => set({ activeTab: tabId }),
 }));
 
 export const useKeyboardShortcut = () => {

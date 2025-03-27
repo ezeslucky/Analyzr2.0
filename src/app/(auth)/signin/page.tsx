@@ -1,30 +1,32 @@
-"use client"
-import { signIn } from '@/auth'
-import { Button } from '@/components/ui/button'
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
+"use client";
 
-function LoginPage() {
+import { Button } from "@/components/ui/button";
+import { signIn } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+
+const LoginPage = () => {
   return (
-    <div className=' relative flex flex-col justify-center items-center gap-3 bg-[#101010] w-full h-screen'>
-        <nav className=' top-0 left-0 fixed flex justify-center items-stretch p-6 w-full'>
-            <Link href="/" className=' flex items-center gap-2' >
-            <Image src="/logo.svg" width={28} height={28} alt='logo' />
-            <span className=' bg-clip-text bg-gradient-to-r from-white to-neutral-500 font-medium text-transparent text-xl'>
-                Analyzr
-            </span>
-            </Link>
-            </nav>
-<h1 className=' text-gray-400'>
-    Please signIn to continue
-</h1>
-
-<form action={ async ()=> {
-    await signIn("google")
-}}>
-<Button type='submit' className=' flex justify-center gap-2 bg-[#f3f3f3] hover:bg-[#e4dedecb] w-fit text-black transition-all duration-300 ease-in-out'>
-<svg
+    <div className="relative flex flex-col justify-center items-center gap-3 bg-[#101010] w-full h-screen">
+      <nav className="top-0 left-0 fixed flex justify-between items-center p-6 w-full">
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/logo.svg" width={28} height={28} alt="Logo" />
+          <span className="bg-clip-text bg-gradient-to-r from-white to-neutral-500 font-medium text-transparent text-xl">
+            Analyzr
+          </span>
+        </Link>
+      </nav>
+      <h1 className="text-gray-400">Please sign in to continue</h1>
+      <form
+        action={async () => {
+          await signIn("google");
+        }}
+      >
+        <Button
+          type="submit"
+          className="flex justify-center items-center gap-2 bg-[#f3f3f3] hover:bg-[#e4dedecb] w-fit text-black transition-all duration-300 ease-in-out"
+        >
+          <svg
             className={`w-5 h-5 transition-transform duration-300 ease-in-out`}
             viewBox="0 0 24 24"
             fill="currentColor"
@@ -48,12 +50,10 @@ function LoginPage() {
             />
           </svg>
           Sign in with Google
-</Button>
-</form>
-       
-      
+        </Button>
+      </form>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

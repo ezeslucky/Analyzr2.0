@@ -1,4 +1,4 @@
-
+import { authConfig } from "@/auth.config";
 import db from "@/lib/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { DefaultSession } from "next-auth";
@@ -14,7 +14,6 @@ declare module "next-auth" {
 }
 
 import Google from "next-auth/providers/google";
-import { authConfig } from "./auth.config";
 
 declare module "next-auth" {
   interface User {
