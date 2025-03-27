@@ -121,11 +121,7 @@ model DeviceAnalytics {
   @@index([analyticsId])
 }
 
-enum DeviceType {
-  DESKTOP
-  MOBILE
-  TABLET
-}
+
 
 model OSAnalytics {
   id String @id @default(cuid())
@@ -151,7 +147,11 @@ model SourceAnalytics {
   @@unique([analyticsId,sourceName])
   @@index([analyticsId])
 }
-
+enum DeviceType {
+  DESKTOP
+  MOBILE
+  TABLET
+}
 model Account {
   userId String 
   type String 
